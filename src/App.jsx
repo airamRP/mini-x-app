@@ -31,7 +31,9 @@ function App() {
   const handleNicknameSubmit = (e) => {
     e.preventDefault();
     if (nickname.trim()) {
-      const newSocket = io("http://localhost:5000");
+      // const newSocket = io("http://localhost:5000");
+       // Usa tu URL de Render
+      const newSocket = io("https://mini-x-api.onrender.com");
       setSocket(newSocket)
       setIsConnected(true);
     }
