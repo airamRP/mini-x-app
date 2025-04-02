@@ -33,11 +33,14 @@ const TuitItem = memo(function TuitItem({ tuit }) {
   );
 });
 
-const Timeline = memo(function Timeline({ socket, tuits }) {
+const Timeline = memo(function Timeline({ tuits, onLogout }) {
   return (
     <div style={{ padding: "20px" }}>
       <h1>Mini-X</h1>
       <Link to="/post">Publicar tuit</Link>
+      <button onClick={onLogout} style={{ marginLeft: "10px" }}>
+        Logout
+      </button>
       <div
         style={{
           border: "1px solid #ccc",
@@ -140,6 +143,7 @@ function App() {
     e.preventDefault();
     if (nickname.trim()) {
       const newSocket = io("https://mini-x-api.onrender.com"); // Reemplaza con tu URL de Render
+      // const newSocket = io("http://localhost:5000"); // Cambia a Render después
       newSocket.emit("login", nickname.trim(), (response) => {
         if (response.success) {
           setSocket(newSocket);
@@ -152,6 +156,19 @@ function App() {
         }
       });
     }
+  };
+
+  const handleLogout = () => {
+    if (socket) {
+      socket.disconnect(); // Desconecta el WebSocket
+    }
+    setIsConnected(false);
+    setSocket(null);
+    setNickname("");
+    setTuits([]);
+    setDisplayedNewCount(0);
+    newTuitsCountRef.current = 0;
+    lastInitialTimestampRef.current = null;
   };
 
   const loadNewTuits = () => {
@@ -185,7 +202,7 @@ function App() {
           element={
             <>
               <NewTuitsButton displayedNewCount={displayedNewCount} loadNewTuits={loadNewTuits} />
-              <Timeline socket={socket} tuits={tuits} />
+              <Timeline tuits={tuits} onLogout={handleLogout} />
             </>
           }
         />
